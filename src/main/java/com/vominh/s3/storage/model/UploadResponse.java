@@ -1,9 +1,18 @@
 package com.vominh.s3.storage.model;
 
 public class UploadResponse {
+    protected String key;
     protected String fileName;
     protected String downloadUrl;
     protected boolean success;
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public String getFileName() {
         return fileName;

@@ -11,16 +11,25 @@ public abstract class S3BaseClient implements IStorageClient {
 
     protected String account;
     protected String key;
-    protected AmazonS3 s3client;
+    protected AmazonS3 s3Client;
 
-    public void authenticate(String key, String secret) {
+    @Override
+    public void authenticate(String key, String secret, Regions region) {
         AWSCredentials credentials = new BasicAWSCredentials(key, secret);
 
-        this.s3client = AmazonS3ClientBuilder
+        this.s3Client = AmazonS3ClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.US_EAST_1)
+                .withRegion(region)
                 .build();
+    }
+
+    protected String getPublicUrlByKey(String bucket, String key) {
+        return s3Client.getUrl(bucket, key).toExternalForm();
+    }
+
+    protected String getKeyFromPublicUrl(String publicUrl) {
+        return publicUrl.substring(publicUrl.lastIndexOf("/") + 1);
     }
 
     public String getAccount() {

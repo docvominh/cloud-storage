@@ -1,20 +1,31 @@
 package com.vominh.s3.storage.service;
 
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.vominh.s3.storage.model.UploadResponse;
 
+import java.io.File;
 import java.io.InputStream;
 
 public class S3ApiImplement extends S3BaseClient implements IStorageClient {
 
-    public UploadResponse uploadFile(String containerName, String fileName, InputStream fileStream) {
+
+    @Override
+    public UploadResponse uploadFile(String bucket, String key, File file) {
         return null;
     }
 
-    public UploadResponse uploadFile(String containerName, String fileName, InputStream fileStream, String contentType) {
+    @Override
+    public UploadResponse uploadFile(String bucket, String key, String fileName, InputStream fileStream, ObjectMetadata metadata) {
         return null;
     }
 
-    public void deleteFile(String containerName, String fileName) {
+    @Override
+    public InputStream download(String bucket, String key) {
+        return null;
+    }
+
+    @Override
+    public void deleteFile(String bucket, String fileName) {
 
     }
 }
