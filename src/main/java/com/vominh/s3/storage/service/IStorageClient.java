@@ -1,21 +1,30 @@
 package com.vominh.s3.storage.service;
 
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.vominh.s3.storage.model.UploadResponse;
+import software.amazon.awssdk.regions.Region;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URI;
+import java.util.List;
 
 public interface IStorageClient {
 
-    void authenticate(String key, String secret, Regions region);
+    void authenticate(String key, String secret, Region region, URI endpointOverride);
+
+    void createBucket(String name);
+
+    void deleteBucket(String name);
+
+    List<String> listBucket();
 
     UploadResponse uploadFile(String bucket, String key, File file);
 
-    UploadResponse uploadFile(String bucket, String key, String fileName, InputStream fileStream, ObjectMetadata metadata);
+    UploadResponse uploadFile(String bucket, String key, String fileName, InputStream fileStream, long contentLength);
 
-    InputStream download(String bucket, String key);
+    byte[] download(String bucket, String key);
 
-    void deleteFile(String bucket, String fileName);
+    void delete(String bucket, String key);
+
+    void deleteByPublicUrl(String bucket, String url);
 }

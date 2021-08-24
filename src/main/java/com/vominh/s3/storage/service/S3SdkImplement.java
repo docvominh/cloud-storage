@@ -1,17 +1,51 @@
 package com.vominh.s3.storage.service;
 
-import com.amazonaws.services.s3.model.*;
 import com.vominh.s3.storage.model.UploadResponse;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.core.sync.ResponseTransformer;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class S3SdkImplement extends S3BaseClient implements IStorageClient {
 
+    @Override
+    public void createBucket(String name) {
+        CreateBucketRequest request = CreateBucketRequest.builder()
+                .bucket(name)
+                .acl(BucketCannedACL.PUBLIC_READ_WRITE)
+                .build();
+
+        s3Client.createBucket(request);
+    }
+
+    @Override
+    public void deleteBucket(String name) {
+        DeleteBucketRequest request = DeleteBucketRequest.builder()
+                .bucket(name)
+                .build();
+        s3Client.deleteBucket(request);
+    }
+
+    @Override
+    public List<String> listBucket() {
+        ListBucketsResponse listBucketsResponse = s3Client.listBuckets();
+        return listBucketsResponse.buckets().stream().map(Bucket::name).collect(Collectors.toList());
+    }
+
     public UploadResponse uploadFile(String bucket, String key, File file) {
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, file);
-        putObjectRequest.withCannedAcl(CannedAccessControlList.PublicReadWrite);
-        s3Client.putObject(putObjectRequest);
+//        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, file);
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .acl(ObjectCannedACL.PUBLIC_READ)
+                .build();
+
+        s3Client.putObject(putObjectRequest, RequestBody.fromFile(file));
 
         UploadResponse response = new UploadResponse();
         response.setKey(key);
@@ -20,10 +54,14 @@ public class S3SdkImplement extends S3BaseClient implements IStorageClient {
         return response;
     }
 
-    public UploadResponse uploadFile(String bucket, String key, String fileName, InputStream fileStream, ObjectMetadata metadata) {
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, fileStream, metadata);
-        putObjectRequest.withCannedAcl(CannedAccessControlList.PublicReadWrite);
-        s3Client.putObject(putObjectRequest);
+    public UploadResponse uploadFile(String bucket, String key, String fileName, InputStream fileStream, long contentLength) {
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .acl(ObjectCannedACL.PUBLIC_READ)
+                .build();
+
+        s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(fileStream, contentLength));
 
         UploadResponse response = new UploadResponse();
         response.setKey(key);
@@ -33,14 +71,21 @@ public class S3SdkImplement extends S3BaseClient implements IStorageClient {
     }
 
     @Override
-    public InputStream download(String bucket, String key) throws AmazonS3Exception {
-        GetObjectRequest getObjectRequest = new GetObjectRequest(bucket, key);
-        S3Object object = s3Client.getObject(getObjectRequest);
-        return object.getObjectContent().getDelegateStream();
+    public byte[] download(String bucket, String key) throws S3Exception {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucket).key(key).build();
+        ResponseBytes<GetObjectResponse> s3Object = s3Client.getObject(getObjectRequest, ResponseTransformer.toBytes());
+        return s3Object.asByteArray();
     }
 
-    public void deleteFile(String bucket, String publicUrl) {
-        DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucket, getKeyFromPublicUrl(publicUrl));
+    @Override
+    public void delete(String bucket, String key) {
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket(bucket).key(key).build();
+        s3Client.deleteObject(deleteObjectRequest);
+    }
+
+    @Override
+    public void deleteByPublicUrl(String bucket, String url) {
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket(bucket).key(getKeyFromPublicUrl(url)).build();
         s3Client.deleteObject(deleteObjectRequest);
     }
 }

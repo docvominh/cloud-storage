@@ -1,35 +1,44 @@
 package com.vominh.s3.storage.service;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetUrlRequest;
+
+import java.net.URI;
 
 public abstract class S3BaseClient implements IStorageClient {
 
     protected String account;
     protected String key;
-    protected AmazonS3 s3Client;
+    protected S3Client s3Client;
 
     @Override
-    public void authenticate(String key, String secret, Regions region) {
-        AWSCredentials credentials = new BasicAWSCredentials(key, secret);
+    public void authenticate(String key, String secret, Region region, URI endpointOverride) {
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(key, secret);
 
-        this.s3Client = AmazonS3ClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(region)
-                .build();
+        if (endpointOverride != null) {
+            this.s3Client = S3Client.builder()
+                    .endpointOverride(endpointOverride)
+                    .region(region)
+                    .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                    .build();
+        } else {
+            this.s3Client = S3Client.builder()
+                    .region(region)
+                    .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                    .build();
+        }
     }
 
     protected String getPublicUrlByKey(String bucket, String key) {
-        return s3Client.getUrl(bucket, key).toExternalForm();
+        GetUrlRequest getUrlRequest = GetUrlRequest.builder().bucket(bucket).key(key).build();
+        return s3Client.utilities().getUrl(getUrlRequest).toExternalForm();
     }
 
     protected String getKeyFromPublicUrl(String publicUrl) {
-        return publicUrl.substring(publicUrl.lastIndexOf("/") + 1);
+        return publicUrl.substring(publicUrl.lastIndexOf("amazonaws.com/") + 14);
     }
 
     public String getAccount() {
