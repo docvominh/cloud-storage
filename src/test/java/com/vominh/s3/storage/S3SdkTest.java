@@ -37,7 +37,7 @@ public class S3SdkTest {
 
 //        String key = System.getProperty("aws-key");
 //        String secret = System.getProperty("aws-secret");
-//        client.authenticate(key, secret, Region.AP_SOUTHEAST_1, null);
+//        client.authenticate(key, secret, "ap-southeast-1", null);
 //        bucket = "developer47";
 
         String key = "localstackTest";
@@ -49,7 +49,7 @@ public class S3SdkTest {
 
     @AfterAll
     public void cleanUp() {
-//        client.deleteBucket(bucket);
+        client.deleteBucket(bucket);
     }
 
     @Test

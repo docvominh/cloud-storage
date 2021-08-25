@@ -38,7 +38,6 @@ public class S3SdkImplement extends S3BaseClient implements IStorageClient {
     }
 
     public UploadResponse uploadFile(String bucket, String key, File file) {
-//        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, file);
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
