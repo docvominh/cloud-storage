@@ -1,6 +1,10 @@
 # s3-storage
 Java lib to working with AWS S3
 
+[![Generic badge](https://img.shields.io/badge/Java-11-<COLOR>.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/AWSSDK-2.17.24-<COLOR>.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/localstack-0.2.15-<COLOR>.svg)](https://shields.io/)
+
 ## Usage
 
 :collision::collision::collision: Don't push your AWS credential on public Git repository :collision::collision::collision:
