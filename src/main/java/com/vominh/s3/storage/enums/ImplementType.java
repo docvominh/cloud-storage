@@ -1,6 +1,6 @@
 package com.vominh.s3.storage.enums;
 
-public enum ClientType {
+public enum ImplementType {
     SDK,
     API
 }

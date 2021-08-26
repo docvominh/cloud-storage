@@ -1,17 +1,21 @@
-package com.vominh.s3.storage.service;
+package com.vominh.s3.storage.service.impl.sdk;
 
 import com.vominh.s3.storage.model.UploadResponse;
+import com.vominh.s3.storage.service.IS3Client;
+import com.vominh.s3.storage.service.impl.S3BaseImplement;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
+import software.amazon.awssdk.services.s3.S3Utilities;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class S3SdkImplement extends S3BaseClient implements IStorageClient {
+public class S3SdkImplement extends S3BaseImplement implements IS3Client {
 
     @Override
     public void createBucket(String name) {
@@ -83,8 +87,8 @@ public class S3SdkImplement extends S3BaseClient implements IStorageClient {
     }
 
     @Override
-    public void deleteByPublicUrl(String bucket, String url) {
-        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket(bucket).key(getKeyFromPublicUrl(url)).build();
+    public void deleteByUri(String bucket, String uri) {
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket(bucket).key(getKeyFromUri(bucket, uri)).build();
         s3Client.deleteObject(deleteObjectRequest);
     }
 }

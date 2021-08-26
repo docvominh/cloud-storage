@@ -1,12 +1,14 @@
-package com.vominh.s3.storage.service;
+package com.vominh.s3.storage.service.impl.api;
 
 import com.vominh.s3.storage.model.UploadResponse;
+import com.vominh.s3.storage.service.IS3Client;
+import com.vominh.s3.storage.service.impl.S3BaseImplement;
 
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
-public class S3ApiImplement extends S3BaseClient implements IStorageClient {
+public class S3ApiImplement extends S3BaseImplement implements IS3Client {
 
 
     @Override
@@ -41,11 +43,10 @@ public class S3ApiImplement extends S3BaseClient implements IStorageClient {
 
     @Override
     public void delete(String bucket, String key) {
-
     }
 
     @Override
-    public void deleteByPublicUrl(String bucket, String url) {
+    public void deleteByUri(String bucket, String url) {
 
     }
 }

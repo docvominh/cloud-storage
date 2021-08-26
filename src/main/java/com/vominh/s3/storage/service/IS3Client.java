@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
-public interface IStorageClient {
+public interface IS3Client {
 
     void authenticate(String key, String secret, Region region, URI endpointOverride);
 
@@ -26,5 +26,5 @@ public interface IStorageClient {
 
     void delete(String bucket, String key);
 
-    void deleteByPublicUrl(String bucket, String url);
+    void deleteByUri(String bucket, String uri);
 }
