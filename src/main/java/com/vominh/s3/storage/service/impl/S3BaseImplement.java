@@ -39,7 +39,7 @@ public abstract class S3BaseImplement implements IS3Client {
     protected String getKeyFromUri(String bucket, String uri) {
         URI s3Uri = URI.create(uri);
         String path = s3Uri.getPath().substring(1);
-        return path.replace(bucket, "").substring(1);
+        return path.replace(bucket, "").substring(0);
     }
 
 }

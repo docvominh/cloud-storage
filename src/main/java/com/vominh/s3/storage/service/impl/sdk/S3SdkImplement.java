@@ -6,12 +6,10 @@ import com.vominh.s3.storage.service.impl.S3BaseImplement;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
-import software.amazon.awssdk.services.s3.S3Utilities;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.File;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,6 +74,17 @@ public class S3SdkImplement extends S3BaseImplement implements IS3Client {
     @Override
     public byte[] download(String bucket, String key) throws S3Exception {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucket).key(key).build();
+        ResponseBytes<GetObjectResponse> s3Object = s3Client.getObject(getObjectRequest, ResponseTransformer.toBytes());
+        return s3Object.asByteArray();
+    }
+
+    @Override
+    public byte[] downloadPortion(String bucket, String key, String range) throws S3Exception {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .range(range)
+                .build();
         ResponseBytes<GetObjectResponse> s3Object = s3Client.getObject(getObjectRequest, ResponseTransformer.toBytes());
         return s3Object.asByteArray();
     }

@@ -8,6 +8,9 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/home.html
+ */
 public interface IS3Client {
 
     void authenticate(String key, String secret, Region region, URI endpointOverride);
@@ -23,6 +26,8 @@ public interface IS3Client {
     UploadResponse uploadFile(String bucket, String key, String fileName, InputStream fileStream, long contentLength);
 
     byte[] download(String bucket, String key);
+
+    byte[] downloadPortion(String bucket, String key, String range);
 
     void delete(String bucket, String key);
 

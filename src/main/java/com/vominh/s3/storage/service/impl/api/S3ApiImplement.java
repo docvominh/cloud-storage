@@ -42,6 +42,11 @@ public class S3ApiImplement extends S3BaseImplement implements IS3Client {
     }
 
     @Override
+    public byte[] downloadPortion(String bucket, String key, String range) {
+        return new byte[0];
+    }
+
+    @Override
     public void delete(String bucket, String key) {
     }
 

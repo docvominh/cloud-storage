@@ -5,20 +5,17 @@ import com.vominh.s3.storage.enums.ImplementType;
 import com.vominh.s3.storage.model.UploadResponse;
 import com.vominh.s3.storage.service.IS3Client;
 import com.vominh.s3.storage.service.S3ClientFactory;
-import com.vominh.s3.storage.service.impl.S3BaseImplement;
 import com.vominh.s3.storage.service.impl.S3BaseImplementTestable;
-import com.vominh.s3.storage.service.impl.api.S3ApiImplement;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.model.BucketAlreadyExistsException;
+import software.amazon.awssdk.services.s3.model.BucketAlreadyOwnedByYouException;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -37,17 +34,11 @@ public class S3SdkTest {
     public void setUp() {
 
         log.info("START SDK TEST");
-
-        URI uri = URI.create("http://123.xxx:9999/pdminh/abcde.jpg");
-        log.info(uri.getHost());
-        log.info(uri.getPath());
-        log.info(String.valueOf(uri.getPort()));
-
         this.client = S3ClientFactory.getClient(ImplementType.SDK);
 
 //        String key = System.getProperty("aws-key");
 //        String secret = System.getProperty("aws-secret");
-//        client.authenticate(key, secret, "ap-southeast-1", null);
+//        client.authenticate(key, secret, Region.AP_SOUTHEAST_1, null);
 //        bucket = "developer47";
 
         String key = "localstackTest";
@@ -59,7 +50,7 @@ public class S3SdkTest {
 
     @AfterAll
     public void cleanUp() {
-        client.deleteBucket(bucket);
+//        client.deleteBucket(bucket);
     }
 
     @Test
@@ -68,7 +59,7 @@ public class S3SdkTest {
 
         try {
             client.createBucket(bucket);
-        } catch (BucketAlreadyExistsException exception) {
+        } catch (BucketAlreadyExistsException | BucketAlreadyOwnedByYouException exception) {
             log.info("Bucket already exist");
         }
 
@@ -127,4 +118,14 @@ public class S3SdkTest {
         client.deleteByUri(bucket, response.getDownloadUrl());
         Assertions.assertThrows(S3Exception.class, () -> client.download(bucket, key));
     }
+
+    @Test
+    @Order(6)
+    public void downloadPortion() {
+        String key = "Sting - Shape of My Heart (Leon).mp4";
+        byte[] data = client.downloadPortion(bucket, key, "bytes=0-5000");
+
+        Assertions.assertEquals(5001, data.length);
+    }
+
 }
