@@ -17,6 +17,15 @@
         <localstack.verstion>0.2.15</localstack.verstion>
         <awssdk.version>2.17.24</awssdk.version>
     </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>AWS S3 Library</name>
+            <url>https://maven.pkg.github.com/docvominh/s3-storage</url>
+        </repository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
